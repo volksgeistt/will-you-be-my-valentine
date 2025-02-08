@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine??</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f6e5f5 0%, #e8d0f5 50%, #d4b5f5 100%);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L45 30L30 60L15 30z' fill='%23ffffff10'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.92);
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 30px;
+            border: 3px solid #9c27b0;
+            box-shadow: 0 8px 32px rgba(156, 39, 176, 0.2),
+                        0 0 0 8px rgba(156, 39, 176, 0.1);
+            max-width: min(90%, 450px);
+            width: 100%;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: perspective(1000px) translateZ(10px);
+        }
+
+        .header_text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 6vw, 46px);
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 24px;
+            text-shadow: 2px 2px 4px rgba(156, 39, 176, 0.2);
+            line-height: 1.2;
+        }
+
+        .gif_container {
+            margin: 20px auto;
+            max-width: 300px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(156, 39, 176, 0.15);
+            border: 3px solid rgba(156, 39, 176, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .gif_container:hover {
+            transform: translateY(-5px);
+        }
+
+        .gif_container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 16px;
+        }
+
+        .buttons {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: clamp(12px, 3vw, 20px);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px min(28px, 6vw);
+            font-size: clamp(16px, 4vw, 20px);
+            border: 2px solid #9c27b0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+            min-width: 130px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+        }
+
+        #noButton {
+            background: linear-gradient(45deg, #e91e63, #f44336);
+            border-color: #e91e63;
+        }
+
+        .message-box {
+            font-size: clamp(16px, 4vw, 20px);
+            color: #9c27b0;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(156, 39, 176, 0.1);
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.1);
+            border: 2px solid rgba(156, 39, 176, 0.2);
+        }
+
+        .success-container {
+            display: none;
+        }
+
+        .custom-message {
+            font-size: clamp(18px, 4.5vw, 24px);
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 20px 0;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .heart {
+            position: fixed;
+            font-size: 24px;
+            user-select: none;
+            pointer-events: none;
+            animation: heartFloat 3s ease-in-out forwards;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .popup-content {
+            background: linear-gradient(135deg, #fff9ff 0%, #f8f0ff 100%);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 400px;
+            position: relative;
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 3px solid #9c27b0;
+            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.2);
+        }
+
+        .popup-overlay.active .popup-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .popup-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #9c27b0;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid rgba(156, 39, 176, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 35px;
+            height: 35px;
+            background: #9c27b0;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            transform: rotate(90deg);
+            background: #7b1fa2;
+        }
+
+        .popup-reasons {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .popup-reasons li {
+            margin: 15px 0;
+            padding: 10px 15px;
+            background: rgba(156, 39, 176, 0.1);
+            border-radius: 10px;
+            color: #9c27b0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .popup-reasons li:hover {
+            transform: translateX(5px);
+            background: rgba(156, 39, 176, 0.15);
+        }
+
+        .popup-reasons li::before {
+            content: '💜';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .popup-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #9c27b0;
+            font-size: 14px;
+        }
+
+        .seal {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: #9c27b0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+            border: 3px solid #fff;
+        }
+
+        @keyframes heartFloat {
+            0% {
+                transform: translateY(0) scale(0.5) rotate(-45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50vh) scale(1) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        @keyframes paper-enter {
+            0% {
+                transform: translateY(-1000px) rotate(-720deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .paper-animation {
+            animation: paper-enter 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="askContainer">
+        <h1 class="header_text">Will you be my Valentine??</h1>
+        <div class="gif_container">
+            <img src="https://media.tenor.com/efbi1EpFlVUAAAAi/bugcat-capoo.gif" alt="Cute Animation" class="floating">
+        </div>
+        <div class="message-box">My Sweetheart <3 💜</div>
+        <div class="buttons">
+            <button class="btn" id="yesButton" onclick="nextPage()">Yes</button>
+            <button class="btn" id="noButton" onmouseover="moveButton()">No</button>
+        </div>
+        <button class="btn" onclick="showReasons()" style="margin-top: 20px;">Why you're special</button>
+    </div>
+
+    <div class="popup-overlay" id="reasonsPopup">
+        <div class="popup-content">
+            <div class="seal">💌</div>
+            <button class="close-button" onclick="hideReasons()">×</button>
+            <h2 class="popup-header">Why You're Special</h2>
+            <ul class="popup-reasons">
+                <li>Your smile brightens my day ✨</li>
+                <li>You make me laugh like no one else 😊</li>
+                <li>Your kindness inspires me 💜</li>
+                <li>Every moment with you is precious 💫</li>
+            </ul>
+            <div class="popup-footer">With all my love 💜 - YOURS FOREVER >~<</div>
+        </div>
+    </div>
+
+    <div class="container success-container" id="successContainer">
+        <h1 class="header_text">Yayayayay!! <3</h1>
+        <div class="gif_container">
+            <img src="https://media.tenor.com/YTw87WdiaasAAAAi/tkthao219-capoo.gif" alt="Success Animation" class="floating">
+        </div>
+        <div class="custom-message">You're The Best!! <3<br>Mwahh! ILYSM 💜</div>
+    </div>
+
+    <script>
+function moveButton() {
+    const button = document.getElementById('noButton');
+    const container = document.querySelector('.container');
+    const containerRect = container.getBoundingClientRect();
+    
+    const maxX = window.innerWidth - button.offsetWidth;
+    const maxY = window.innerHeight - button.offsetHeight;
+    
+    let randomX, randomY;
+    do {
+        randomX = Math.floor(Math.random() * maxX);
+        randomY = Math.floor(Math.random() * maxY);
+    } while (
+        randomX >= containerRect.left && 
+        randomX <= containerRect.right && 
+        randomY >= containerRect.top && 
+        randomY <= containerRect.bottom
+    );
+    
+    button.style.position = 'fixed';
+    button.style.left = `${randomX}px`;
+    button.style.top = `${randomY}px`;
+}
+
+function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.innerHTML = '💜';
+    heart.style.left = Math.random() * 100 + 'vw';
+    document.body.appendChild(heart);
+    
+    setTimeout(() => {
+        heart.remove();
+    }, 3000);
+}
+
+function nextPage() {
+    const askContainer = document.getElementById('askContainer');
+    const successContainer = document.getElementById('successContainer');
+    
+    askContainer.style.display = 'none';
+    successContainer.style.display = 'block';
+    
+    setInterval(createHeart, 700);
+}
+
+function showReasons() {
+    const popup = document.getElementById('reasonsPopup');
+    popup.style.display = 'flex';
+    setTimeout(() => {
+        popup.classList.add('active');
+    }, 10);
+}
+
+function hideReasons() {
+    const popup = document.getElementById('reasonsPopup');
+    popup.classList.remove('active');
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 300);
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        hideReasons();
+    }
+});
+
+document.getElementById('reasonsPopup').addEventListener('click', (event) => {
+    if (event.target.id === 'reasonsPopup') {
+        hideReasons();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.container').classList.add('paper-animation');
+});
+</script>
+</body>
+</html>
